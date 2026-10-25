@@ -28,6 +28,27 @@
       </section>
 
       <section>
+        <h2 class="mt-5 text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-5">Agent-OS Customization</h2>
+        <div class="flex flex-col gap-1.5 mb-6 mx-auto w-full max-w-sm">
+          <Label class="text-center justify-center">Agent Default Prompt</Label>
+          <textarea v-model="agentPrompt" rows="4" class="w-full rounded-md border bg-background px-3 py-2 text-sm" placeholder="System prompt..."></textarea>
+          <div class="flex gap-2 mt-2">
+            <Button @click="savePrompt" class="flex-1">Save Prompt</Button>
+            <Button @click="resetPrompt" variant="outline" class="flex-1">Reset Default</Button>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Plugin Configuration</h2>
+        <div class="flex flex-col gap-1.5 mb-6 mx-auto w-full max-w-sm">
+          <Label class="text-center justify-center">Remote Config URL</Label>
+          <Input v-model="pluginUrl" type="url" placeholder="https://..." class="w-full" />
+          <Button @click="loadPluginConfig" class="mt-2">Load Plugins</Button>
+        </div>
+      </section>
+
+      <section>
         <h2 class="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">{{ t('settings.notifications') }}</h2>
         <div class="flex items-start gap-3">
           <Switch id="nativeNotifications" v-model="notificationsEnabled" />
@@ -69,6 +90,8 @@ import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import StoreBadges from '@/components/StoreBadges.vue'
 import { useConnectionStore } from '@/stores/connectionStore'
+import { usePluginStore } from '@/stores/pluginStore'
+import { getStoredPrompt, setStoredPrompt, resetStoredPrompt } from '@/services/plugin/defaultPrompt'
 import {
   disableNativeNotificationsFromSettings,
   enableNativeNotificationsFromSettings,
@@ -78,12 +101,29 @@ import { useI18n, type Locale } from '@/i18n'
 
 const router = useRouter()
 const connectionStore = useConnectionStore()
+const pluginStore = usePluginStore()
 const { t, locale, setLocale, supportedLocales } = useI18n()
 
 const timeoutMs = ref(connectionStore.healthCheckTimeout)
 const pollMs = ref(connectionStore.healthPollInterval)
 const exponentialReconnect = ref(connectionStore.exponentialReconnectEnabled)
 const notificationsEnabled = ref(false)
+const pluginUrl = ref('')
+const agentPrompt = ref(getStoredPrompt())
+
+const savePrompt = () => {
+  setStoredPrompt(agentPrompt.value)
+}
+
+const resetPrompt = () => {
+  agentPrompt.value = resetStoredPrompt()
+}
+
+const loadPluginConfig = async () => {
+  if (pluginUrl.value) {
+    await pluginStore.loadConfig(pluginUrl.value)
+  }
+}
 
 let notificationsLoaded = false
 let syncingNotificationsSwitch = false

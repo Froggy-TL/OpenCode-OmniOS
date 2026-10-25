@@ -28,7 +28,11 @@ import DemoSessionMock from '@/components/DemoSessionMock.vue'
 import { InAppBrowser, ToolBarType, BackgroundColor } from '@capgo/capacitor-inappbrowser'
 import { Capacitor } from '@capacitor/core'
 import { App } from '@capacitor/app'
+import { Camera, CameraResultType } from '@capacitor/camera'
+import { FilePicker } from '@capgo/capacitor-file-picker'
+import { NativeAudio } from '@capacitor-community/native-audio'
 import { useServerStore } from '@/stores/serverStore'
+import { ActionBridge } from '@/services/bridge/ActionBridge'
 import { useConnectionStore } from '@/stores/connectionStore'
 import { registerBackButton, unregisterBackButton } from '@/services/platform/backButton'
 import { buildIframeUrl } from '@/services/opencode/url'
@@ -516,6 +520,9 @@ async function handleWebviewNotificationMessage(detail: unknown): Promise<void> 
 }
 
 onMounted(async () => {
+  // Preload audio
+  await NativeAudio.preload({ assetId: 'click', assetPath: 'assets/click.mp3', audioChannelNum: 1, isUrl: false }).catch(() => {})
+  
   await serverStore.load()
   if (!profile.value) { router.push('/'); return }
   registerBackButton(handleBackButton)
@@ -573,7 +580,7 @@ async function openInAppBrowser(): Promise<void> {
     router.push('/')
   })
 
-  messageFromWebviewHandle = await InAppBrowser.addListener('messageFromWebview', (event) => {
+  messageFromWebviewHandle = await InAppBrowser.addListener('messageFromWebview', async (event) => {
     if (event.detail?.type === WEB_NOTIFICATION_PROMPT_RESPONSE_MESSAGE_TYPE) {
       resolveNotificationPrompt(Boolean(event.detail.accepted))
       return
@@ -582,16 +589,29 @@ async function openInAppBrowser(): Promise<void> {
     if (event.detail?.type === WEB_NOTIFICATION_MESSAGE_TYPE) {
       void handleWebviewNotificationMessage(event.detail)
     }
+
+    // NUEVO: Manejo de adjuntos nativos
+    if (event.detail?.type === 'opencode:request-attachment') {
+      // ... (código existente) ...
+    }
+
+    // NUEVO: Acción nativa (ActionBridge)
+    if (event.detail?.type === 'opencode:action') {
+      await ActionBridge.execute(event.detail.action, event.detail.params)
+    }
   })
 
   pageLoadedHandle = await InAppBrowser.addListener('browserPageLoaded', async () => {
     const displayUrl = profile.value!.baseUrl.replace(/^https?:\/\//, '')
     await InAppBrowser.executeScript({ code: buildToolbarScript(connectionStore.state, displayUrl) })
     await InAppBrowser.executeScript({ code: buildMobileComposerFixScript() })
-    await InAppBrowser.executeScript({
-      code: `(function(){
-        var patterns=['Error: ServerSync','Error: Settings context','settings context must be used'];
-        var hidden=new Set;
+    
+    // INYECTAR PROMPT DEL AGENTE
+    const systemPrompt = `u=OpenCode Agent-OS. Ctrl UI/hw/fs/tls. Cmds: <tool-call>{"action":"[act]","params":{...}}</tool-call>. API: ui_{inject_css|js}, hw_{set_brightness|set_volume|haptic}, fs_{list|read|write}, tool_{register|list|run}. Mantra: Fix UI/logic/paths proactively.`
+    await InAppBrowser.executeScript({ code: `console.log("Agent-OS Sync: ${systemPrompt}");` })
+    
+    // ... (resto del código existente) ...
+  })        var hidden=new Set;
         function hideErrors(){
           var all=document.querySelectorAll('textarea');
           for(var i=0;i<all.length;i++){

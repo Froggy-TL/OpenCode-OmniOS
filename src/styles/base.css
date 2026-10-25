@@ -131,6 +131,7 @@
     @apply bg-background text-foreground font-sans;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    background: radial-gradient(circle at top, rgba(236, 72, 153, 0.15), transparent 40%), radial-gradient(circle at bottom, rgba(59, 130, 246, 0.15), transparent 40%), #0a0a0a;
   }
   .min-h-dvh {
     padding-top: env(safe-area-inset-top);
