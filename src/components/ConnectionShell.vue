@@ -610,8 +610,10 @@ async function openInAppBrowser(): Promise<void> {
     const systemPrompt = `u=OpenCode Agent-OS. Ctrl UI/hw/fs/tls. Cmds: <tool-call>{"action":"[act]","params":{...}}</tool-call>. API: ui_{inject_css|js}, hw_{set_brightness|set_volume|haptic}, fs_{list|read|write}, tool_{register|list|run}. Mantra: Fix UI/logic/paths proactively.`
     await InAppBrowser.executeScript({ code: `console.log("Agent-OS Sync: ${systemPrompt}");` })
     
-    // ... (resto del código existente) ...
-  })        var hidden=new Set;
+    await InAppBrowser.executeScript({
+      code: `(function(){
+        var patterns=['Error: ServerSync','Error: Settings context','settings context must be used'];
+        var hidden=new Set;
         function hideErrors(){
           var all=document.querySelectorAll('textarea');
           for(var i=0;i<all.length;i++){
