@@ -8,33 +8,28 @@ jobs:
   build:
     runs-on: ubuntu-22.04
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
-
-      - name: Setup Java
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-
-      - name: Install Dependencies
-        run: npm install --legacy-peer-deps
-
-      - name: Build Web App
-        run: npx vite build
-
-      - name: Add Android Platform & Sync
+      - name: Raw Setup & Build via Bash
         run: |
+          echo "=== Installing Node 18 ==="
+          curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+          sudo apt-get install -y nodejs java-17-openjdk-amd64
+          
+          echo "=== Checking Versions ==="
+          node -v
+          npm -v
+          java -version
+
+          echo "=== Installing Dependencies ==="
+          npm install --legacy-peer-deps
+
+          echo "=== Building Web App ==="
+          npx vite build
+
+          echo "=== Syncing Capacitor Android ==="
           npx cap add android || true
           npx cap sync android
 
-      - name: Build Android APK
-        run: |
+          echo "=== Compiling APK ==="
           cd android
           chmod +x gradlew
           ./gradlew assembleDebug
