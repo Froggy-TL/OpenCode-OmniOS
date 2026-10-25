@@ -22,13 +22,15 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Install Dependencies & Build Web
-        run: |
-          npm install
-          npx vite build || npm run build
+      - name: Install Dependencies
+        run: npm ci || npm install --legacy-peer-deps
 
-      - name: Sync Capacitor Android
+      - name: Build Web App
+        run: npx vite build
+
+      - name: Add Android Platform & Sync
         run: |
+          npx cap add android || true
           npx cap sync android
 
       - name: Build Android APK
