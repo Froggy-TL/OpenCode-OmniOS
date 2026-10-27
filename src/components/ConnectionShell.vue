@@ -694,7 +694,11 @@ Mantra: Whenever the user requests custom interfaces, dashboards, widgets, or OS
                 var match = content.match(/\[Omni_call\]([\s\S]*?)\[\/Omni_call\]/) || content.match(/<tool-call>([\s\S]*?)<\/tool-call>/);
                 if (match && match[1]) {
                   var jsonStr = match[1].trim();
-                  jsonStr = jsonStr.replace(new RegExp('```json', 'g'), '').replace(new RegExp('```', 'g'), '').trim();
+                  var startIdx = jsonStr.indexOf('{');
+                  var endIdx = jsonStr.lastIndexOf('}');
+                  if (startIdx !== -1 && endIdx !== -1) {
+                      jsonStr = jsonStr.substring(startIdx, endIdx + 1);
+                  }
                   var data = JSON.parse(jsonStr);
                   if (data && data.action) {
                     node.style.display = 'none'; // Ocultar texto crudo
