@@ -614,9 +614,55 @@ async function openInAppBrowser(): Promise<void> {
     await InAppBrowser.executeScript({ code: buildToolbarScript(connectionStore.state, displayUrl) })
     await InAppBrowser.executeScript({ code: buildMobileComposerFixScript() })
     
-    // INYECTAR PROMPT DEL AGENTE
-    const systemPrompt = `u=OpenCode Agent-OS. Ctrl UI/hw/fs/tls. Cmds: <tool-call>{"action":"[act]","params":{...}}</tool-call>. API: ui_{inject_css|js}, hw_{set_brightness|set_volume|haptic}, fs_{list|read|write}, tool_{register|list|run}. Mantra: Fix UI/logic/paths proactively.`
-    await InAppBrowser.executeScript({ code: `console.log("Agent-OS Sync: ${systemPrompt}");` })
+    // INYECTAR PROMPT DEL AGENTE Y ESTILOS NEÓN EN LA UI WEBVIEW
+    const systemPrompt = `u=OpenCode Omni-OS v2.0 (Unlimited Freedom). You have absolute control over UI, hardware, filesystem, and tools. 
+When you want to execute an action or render something, output tool-calls in this exact format:
+<tool-call>{"action":"[action_name]","params":{...}}</tool-call>
+
+Available APIs:
+- ui_{inject_css | inject_js | render_schema}: Materialize UI schemas (Card, Button, etc.) dynamically into dimensional portal layers with live gradients and parallax.
+- hw_{set_brightness | set_volume | haptic}: Control device hardware.
+- fs_{list | read | write | delete}: Manage persistent virtual files.
+- tool_{register | run | list}: Register and execute arbitrary JavaScript/TypeScript code safely via RuntimeEngine.
+- dom_eval: Evaluate expressions on the DOM.
+
+Mantra: Fix UI, logic, and paths proactively. Materialize components dynamically on user demand.`
+    
+    await InAppBrowser.executeScript({ 
+      code: `(function(){
+        console.log("Agent-OS Sync: " + ${JSON.stringify(systemPrompt)});
+        window.agentOSPrompt = ${JSON.stringify(systemPrompt)};
+        
+        // Inyectar estética oscura, neón y bordes translúcidos en todo el chat webview
+        var s = document.createElement('style');
+        s.innerHTML = \`
+          body, html, * {
+            background-color: #0c0a1d !important;
+            color: #f8fafc !important;
+          }
+          button, input, textarea, div[role="button"] {
+            border: 1px solid rgba(255, 149, 231, 0.25) !important;
+            background: linear-gradient(to bottom, rgba(255,255,255,0.06), rgba(0,0,0,0.3)) !important;
+            box-shadow: 0 0 15px rgba(255, 149, 231, 0.1) !important;
+            border-radius: 12px !important;
+          }
+          button:hover, div[role="button"]:hover {
+            border-color: rgba(255, 149, 231, 0.6) !important;
+            box-shadow: 0 0 20px rgba(255, 149, 231, 0.3) !important;
+          }
+        \`;
+        document.head.appendChild(s);
+
+        var inputArea = document.querySelector('[data-component="prompt-input"], textarea');
+        if (inputArea && !inputArea.dataset.omniInjected) {
+          inputArea.dataset.omniInjected = "true";
+          if (!inputArea.value) {
+            inputArea.value = ${JSON.stringify(systemPrompt)};
+            inputArea.dispatchEvent(new Event('input', { bubbles: true }));
+          }
+        }
+      })();` 
+    })
     
     await InAppBrowser.executeScript({
       code: `(function(){
