@@ -1,12 +1,19 @@
 <template>
   <div
     ref="pullContainerRef"
-    class="min-h-dvh flex flex-col px-6 overflow-y-auto relative"
+    class="min-h-dvh flex flex-col px-6 overflow-y-auto relative bg-[#070514] text-slate-100 select-none"
     @touchstart="pull.onTouchStart"
     @touchmove="pull.onTouchMove"
     @touchend="pull.onTouchEnd"
   >
-    <div class="flex-1 flex flex-col items-center justify-center relative" :style="pullContentStyle">
+    <!-- FONDO ESPACIAL EXACTO AL ARTE DE GPT -->
+    <div class="absolute inset-0 pointer-events-none overflow-hidden z-0">
+      <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[350px] bg-gradient-to-b from-[#b833a0]/35 via-[#632080]/15 to-transparent blur-[80px] rounded-full"></div>
+      <div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-[700px] h-[400px] bg-gradient-to-t from-[#0ea5e9]/25 via-[#0369a1]/10 to-transparent blur-[90px] rounded-full"></div>
+      <div class="absolute inset-0 opacity-10 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
+    </div>
+
+    <div class="flex-1 flex flex-col items-center justify-center relative z-10" :style="pullContentStyle">
       <svg
         ref="svgRef"
         viewBox="0 0 48 48"
@@ -18,20 +25,19 @@
         <path fill="currentColor" d="m36.565 14.114-3.145 2.471a12.02 12.02 0 0 1 2.058 10.912c-.934 3.066-3.005 5.586-5.833 7.095s-6.076 1.824-9.141.893c-6.33-1.927-9.913-8.644-7.987-14.974a11.924 11.924 0 0 1 5.832-7.095 11.914 11.914 0 0 1 6.767-1.361l-3.531 3.531 2.828 2.828L32.828 10l-8.414-8.414-2.828 2.828 3.645 3.645a15.876 15.876 0 0 0-8.764 1.828 15.89 15.89 0 0 0-7.775 9.46C6.123 27.786 10.9 36.742 19.341 39.31a16.03 16.03 0 0 0 4.678.701c2.591 0 5.159-.637 7.51-1.891a15.895 15.895 0 0 0 7.776-9.46 16.015 16.015 0 0 0-2.74-14.546z"/>
       </svg>
       <div class="w-full max-w-sm flex flex-col items-center gap-6">
-        <div class="text-center mb-15 mt-33">
+        <div class="text-center mb-12 mt-12">
           <div class="flex flex-col items-center gap-3 mb-6">
-            <!-- Icono con máscara y degradado en vivo -->
-            <div class="w-16 h-16 bg-gradient-to-tr from-[#FF95E7] via-[#1390FF] to-[#9333ea] mask-icon shadow-[0_0_20px_rgba(255,149,231,0.6)]" style="-webkit-mask-image: url('/icon-mask.png'); mask-image: url('/icon-mask.png'); -webkit-mask-size: contain; mask-size: contain; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; -webkit-mask-position: center; mask-position: center;"></div>
+            <!-- Icono usando imagen directa con nitidez máxima -->
+            <img src="/icon-mask.png" alt="OmniOS Icon" class="h-16 w-16 object-contain filter drop-shadow-[0_0_15px_rgba(255,149,231,0.5)]" />
             
             <div class="flex flex-col items-center gap-1.5 mt-2">
-              <!-- OpenCode Text Mask con degradado en vivo y suavizado vectorial -->
-              <div class="h-5 w-48 bg-gradient-to-r from-[#1390FF] to-[#FF95E7] shadow-[0_0_10px_rgba(19,144,255,0.5)]" style="-webkit-mask-image: url('/opencode-text-mask.png'); mask-image: url('/opencode-text-mask.png'); -webkit-mask-size: contain; mask-size: contain; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; -webkit-mask-position: center; mask-position: center;"></div>
-              
-              <!-- OmniOS Text Mask con degradado en vivo y suavizado vectorial -->
-              <div class="h-6 w-56 bg-gradient-to-r from-[#FF95E7] via-[#1390FF] to-[#9333ea] shadow-[0_0_15px_rgba(255,149,231,0.6)]" style="-webkit-mask-image: url('/omnios-text-mask.png'); mask-image: url('/omnios-text-mask.png'); -webkit-mask-size: contain; mask-size: contain; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; -webkit-mask-position: center; mask-position: center;"></div>
+              <!-- OpenCode Text (Imagen directa limpia y nítida) -->
+              <img src="/opencode-mask.png" alt="OpenCode" class="h-5 object-contain filter drop-shadow-[0_0_8px_rgba(19,144,255,0.4)]" />
+              <!-- OmniOS Text (Imagen directa limpia y nítida) -->
+              <img src="/omnios-mask.png" alt="OmniOS" class="h-6 object-contain filter drop-shadow-[0_0_12px_rgba(255,149,231,0.5)]" />
             </div>
           </div>
-          <p class="text-sm text-muted-foreground">{{ t('landing.tagline') }}</p>
+          <p class="text-xs text-slate-400 tracking-wide font-sans mt-1">{{ t('landing.tagline') }}</p>
         </div>
 
         <Card v-if="defaultProfile" class="cursor-pointer" @click="connectDefault" tabindex="0" @keydown.enter="connectDefault">
