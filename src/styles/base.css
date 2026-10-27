@@ -133,7 +133,14 @@
     @apply bg-background text-foreground font-sans;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    background: radial-gradient(circle at top, #FF95E7, transparent 40%), radial-gradient(circle at bottom, #1390FF, transparent 40%), #0a0a0a;
+    background: radial-gradient(ellipse at 18% 15%, #25205a 0, transparent 42%),
+                radial-gradient(ellipse at 92% 76%, #211044 0, transparent 42%),
+                linear-gradient(145deg, #080c22, #07091a 70%);
+    min-height: 100vh;
+  }
+  
+  html {
+    background: #07091a;
   }
   .min-h-dvh {
     padding-top: env(safe-area-inset-top);

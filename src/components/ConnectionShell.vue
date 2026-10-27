@@ -649,19 +649,22 @@ Mantra: Whenever the user requests custom interfaces, dashboards, widgets, or OS
         
         var s = document.createElement('style');
         s.innerHTML = \`
-          body, html, * {
-            background-color: #0c0a1d !important;
-            color: #f8fafc !important;
+          body, html, #root, div[data-component*="session"] {
+            background: radial-gradient(ellipse at 18% 15%, #25205a 0, transparent 42%),
+                        radial-gradient(ellipse at 92% 76%, #211044 0, transparent 42%),
+                        linear-gradient(145deg, #080c22, #07091a 70%) !important;
+            color: #f4f4ff !important;
           }
-          button, input, textarea, div[role="button"] {
-            border: 1px solid rgba(255, 149, 231, 0.25) !important;
-            background: linear-gradient(to bottom, rgba(255,255,255,0.06), rgba(0,0,0,0.3)) !important;
-            box-shadow: 0 0 15px rgba(255, 149, 231, 0.1) !important;
-            border-radius: 12px !important;
+          button, input, textarea, div[role="button"], .bg-background {
+            border: 1px solid rgba(155, 133, 255, 0.38) !important;
+            background: linear-gradient(140deg, rgba(29, 29, 76, .78), rgba(8, 13, 37, .79)) !important;
+            box-shadow: 0 15px 45px rgba(0,0,0,0.3), inset 0 1px rgba(255,255,255,0.05) !important;
+            backdrop-filter: blur(18px) !important;
+            border-radius: 17px !important;
           }
           button:hover, div[role="button"]:hover {
-            border-color: rgba(255, 149, 231, 0.6) !important;
-            box-shadow: 0 0 20px rgba(255, 149, 231, 0.3) !important;
+            border-color: rgba(241, 139, 255, 0.67) !important;
+            box-shadow: 0 12px 28px rgba(0,0,0,0.4), 0 0 22px rgba(125, 102, 255, 0.2) !important;
           }
         \`;
         document.head.appendChild(s);
