@@ -14,6 +14,11 @@ export default defineConfig({
     host: '0.0.0.0',
     port: 5173,
   },
+  build: {
+    rollupOptions: {
+      external: ['@capacitor-community/native-audio'],
+    },
+  },
   test: {
     environment: 'jsdom',
     include: ['src/tests/**/*.test.ts'],

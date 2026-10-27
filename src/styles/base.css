@@ -10,7 +10,9 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --font-sans: 'Geist', sans-serif;
+  --font-opencode: 'OpenCode', sans-serif;
+  --color-opencode-pink: #FF95E7;
+  --color-opencode-blue: #1390FF;
   --font-heading: var(--font-sans);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -131,7 +133,7 @@
     @apply bg-background text-foreground font-sans;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    background: radial-gradient(circle at top, rgba(236, 72, 153, 0.15), transparent 40%), radial-gradient(circle at bottom, rgba(59, 130, 246, 0.15), transparent 40%), #0a0a0a;
+    background: radial-gradient(circle at top, #FF95E7, transparent 40%), radial-gradient(circle at bottom, #1390FF, transparent 40%), #0a0a0a;
   }
   .min-h-dvh {
     padding-top: env(safe-area-inset-top);

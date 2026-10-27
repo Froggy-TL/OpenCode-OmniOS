@@ -5,6 +5,11 @@
   />
 
   <div v-else class="fixed inset-0 flex flex-col items-center justify-center z-[1] bg-background">
+    <!-- Capa de Materialización Visual -->
+    <DimensionalMaterializer :active="layoutStore.dynamicLayout.length > 0">
+      <DynamicRenderer :schema="layoutStore.dynamicLayout" />
+    </DimensionalMaterializer>
+
     <div v-if="loading" class="flex flex-col items-center gap-4">
       <div class="h-8 w-8 animate-spin rounded-full border-4 border-border border-t-foreground" />
       <p class="text-sm text-muted-foreground">{{ t('connection.loading') }}</p>
@@ -25,12 +30,14 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { Button } from '@/components/ui/button'
 import DemoSessionMock from '@/components/DemoSessionMock.vue'
+import DynamicRenderer from '@/components/ui/DynamicRenderer.vue'
+import DimensionalMaterializer from '@/components/DimensionalMaterializer.vue'
+import { useLayoutStore } from '@/stores/layoutStore'
 import { InAppBrowser, ToolBarType, BackgroundColor } from '@capgo/capacitor-inappbrowser'
 import { Capacitor } from '@capacitor/core'
 import { App } from '@capacitor/app'
 import { Camera, CameraResultType } from '@capacitor/camera'
-import { FilePicker } from '@capgo/capacitor-file-picker'
-import { NativeAudio } from '@capacitor-community/native-audio'
+const NativeAudio = { preload: async () => {} }
 import { useServerStore } from '@/stores/serverStore'
 import { ActionBridge } from '@/services/bridge/ActionBridge'
 import { useConnectionStore } from '@/stores/connectionStore'
@@ -50,6 +57,7 @@ const route = useRoute()
 const router = useRouter()
 const serverStore = useServerStore()
 const connectionStore = useConnectionStore()
+const layoutStore = useLayoutStore()
 const { t } = useI18n()
 
 const loading = ref(true)
