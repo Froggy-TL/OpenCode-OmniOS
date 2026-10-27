@@ -19,9 +19,17 @@
       </svg>
       <div class="w-full max-w-sm flex flex-col items-center gap-6">
         <div class="text-center mb-15 mt-33">
-          <div class="flex flex-col items-center gap-2 mb-6">
-            <img src="/icono-omnios.png" alt="OmniOS Icon" class="h-16 w-16 object-contain drop-shadow-[0_0_15px_rgba(255,149,231,0.5)]" />
-            <img src="/logo-omnios.png" alt="OmniOS Logo" class="h-8 object-contain filter drop-shadow-[0_0_10px_rgba(19,144,255,0.6)]" />
+          <div class="flex flex-col items-center gap-3 mb-6">
+            <!-- Icono con máscara y degradado en vivo -->
+            <div class="w-16 h-16 bg-gradient-to-tr from-[#FF95E7] via-[#1390FF] to-[#9333ea] mask-icon shadow-[0_0_20px_rgba(255,149,231,0.6)]" style="-webkit-mask-image: url('/icon-mask.png'); mask-image: url('/icon-mask.png'); -webkit-mask-size: contain; mask-size: contain; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; -webkit-mask-position: center; mask-position: center;"></div>
+            
+            <div class="flex flex-col items-center gap-1.5 mt-2">
+              <!-- OpenCode Text Mask con degradado en vivo y suavizado vectorial -->
+              <div class="h-5 w-48 bg-gradient-to-r from-[#1390FF] to-[#FF95E7] shadow-[0_0_10px_rgba(19,144,255,0.5)]" style="-webkit-mask-image: url('/opencode-text-mask.png'); mask-image: url('/opencode-text-mask.png'); -webkit-mask-size: contain; mask-size: contain; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; -webkit-mask-position: center; mask-position: center;"></div>
+              
+              <!-- OmniOS Text Mask con degradado en vivo y suavizado vectorial -->
+              <div class="h-6 w-56 bg-gradient-to-r from-[#FF95E7] via-[#1390FF] to-[#9333ea] shadow-[0_0_15px_rgba(255,149,231,0.6)]" style="-webkit-mask-image: url('/omnios-text-mask.png'); mask-image: url('/omnios-text-mask.png'); -webkit-mask-size: contain; mask-size: contain; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; -webkit-mask-position: center; mask-position: center;"></div>
+            </div>
           </div>
           <p class="text-sm text-muted-foreground">{{ t('landing.tagline') }}</p>
         </div>
