@@ -624,26 +624,29 @@ async function openInAppBrowser(): Promise<void> {
     await InAppBrowser.executeScript({ code: buildToolbarScript(connectionStore.state, displayUrl) })
     await InAppBrowser.executeScript({ code: buildMobileComposerFixScript() })
     
-    // INYECTAR PROMPT DEL AGENTE Y ESTILOS NEÓN EN LA UI WEBVIEW
-    const systemPrompt = `u=OpenCode Omni-OS v2.0 (Unlimited Freedom). You have absolute control over UI, hardware, filesystem, and tools. 
-When you want to execute an action or render something, output tool-calls in this exact format:
-<tool-call>{"action":"[action_name]","params":{...}}</tool-call>
+    // INYECTAR PROMPT DEL AGENTE CON LA SINTAXIS OFICIAL [Omni_call]
+    const systemPrompt = `u=OpenCode Omni-OS v2.0 (Unlimited Freedom Extension). You are fully integrated with the OpenCode runtime.
+When you need to execute an action, render UI components, mutate the app, or control hardware, you MUST wrap your command strictly inside [Omni_call] and [/Omni_call] tags in this exact format:
 
-Available APIs:
-- ui_{inject_css | inject_js | render_schema}: Materialize UI schemas (Card, Button, etc.) dynamically into dimensional portal layers with live gradients and parallax.
-- hw_{set_brightness | set_volume | haptic}: Control device hardware.
-- fs_{list | read | write | delete}: Manage persistent virtual files.
-- tool_{register | run | list}: Register and execute arbitrary JavaScript/TypeScript code safely via RuntimeEngine.
-- dom_eval: Evaluate expressions on the DOM.
+[Omni_call]
+{"action":"[action_name]","params":{...}}
+[/Omni_call]
 
-Mantra: Fix UI, logic, and paths proactively. Materialize components dynamically on user demand.`
+Available APIs & Actions:
+- ui_render_schema: Materialize UI schemas (Card, Button, etc.) dynamically into dimensional portal layers with live gradients and parallax. Example: {"action":"ui_render_schema","params":{"schema":[{"type":"Card","props":{"title":"Dashboard"},"children":[{"type":"Button","props":{"text":"Click me"}}]}]}}
+- ui_inject_css / ui_inject_js: Inject raw styles or scripts.
+- hw_set_brightness / hw_set_volume / hw_haptic: Control device hardware.
+- fs_list / fs_read / fs_write / fs_delete: Manage persistent virtual files.
+- tool_register / tool_run / tool_list: Register and execute arbitrary JS/TS via RuntimeEngine.
+- set_app_identity: Customize theme variables.
+
+Mantra: Whenever the user requests custom interfaces, dashboards, widgets, or OS-level control, immediately emit [Omni_call] ... [/Omni_call] with valid JSON. Never output raw tool-calls outside these tags.`
     
     await InAppBrowser.executeScript({ 
       code: `(function(){
         console.log("Agent-OS Sync: " + ${JSON.stringify(systemPrompt)});
         window.agentOSPrompt = ${JSON.stringify(systemPrompt)};
         
-        // Inyectar estética oscura, neón y bordes translúcidos en todo el chat webview
         var s = document.createElement('style');
         s.innerHTML = \`
           body, html, * {
@@ -683,27 +686,25 @@ Mantra: Fix UI, logic, and paths proactively. Materialize components dynamically
           var textNodes = document.querySelectorAll('p, div, span, code, pre, li');
           for (var i = 0; i < textNodes.length; i++) {
             var node = textNodes[i];
-            if (node.textContent && (node.textContent.includes('<tool-call>') || (node.textContent.includes('"action":') && node.textContent.includes('"params":'))) && !node.dataset.omniProcessed) {
+            if (node.textContent && (node.textContent.includes('[Omni_call]') || node.textContent.includes('<tool-call>')) && !node.dataset.omniProcessed) {
               node.dataset.omniProcessed = "true";
               try {
                 var content = node.textContent;
-                var match = content.match(/<tool-call>([\\s\\S]*?)<\/tool-call>/) || [null, content];
-                if (match[1]) {
+                // Extraer contenido entre [Omni_call] ... [/Omni_call] o <tool-call> ... </tool-call>
+                var match = content.match(/\[Omni_call\]([\s\S]*?)\[\/Omni_call\]/) || content.match(/<tool-call>([\s\S]*?)<\/tool-call>/);
+                if (match && match[1]) {
                   var jsonStr = match[1].trim();
-                  // Limpiar formato markdown si viene con ```json ... ```
                   jsonStr = jsonStr.replace(/^```json\s*/i, '').replace(/^```\s*/, '').replace(/\s*```$/, '');
                   var data = JSON.parse(jsonStr);
                   if (data && data.action) {
-                    // Ocultar el bloque de texto crudo de la IA
-                    node.style.display = 'none';
-                    // Enviar acción al nativo
+                    node.style.display = 'none'; // Ocultar texto crudo
                     if (window.mobileApp && typeof window.mobileApp.postMessage === 'function') {
                       window.mobileApp.postMessage({ detail: { type: 'opencode:action', action: data.action, params: data.params } });
                     }
                   }
                 }
               } catch(e) {
-                console.error("Tool-call execution error:", e);
+                console.error("Omni_call parse error:", e);
               }
             }
           }
