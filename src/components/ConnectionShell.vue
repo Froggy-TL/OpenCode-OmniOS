@@ -604,12 +604,13 @@ async function openInAppBrowser(): Promise<void> {
       await ActionBridge.execute(action, event.detail.params || event.detail)
     }
 
-    // SI LA WEBVIEW ENVÍA UN MENSAJE DE TEXTO CON <tool-call>
-    if (typeof event.detail === 'string' && event.detail.includes('<tool-call>')) {
+    // INTERCEPTAR LLAMADAS DE TOOL-CALL Y OCULTAR JSON CRUDO EN EL CHAT
+    if (typeof event.detail === 'string' && (event.detail.includes('<tool-call>') || event.detail.includes('{"action":'))) {
       try {
-        const match = event.detail.match(/<tool-call>([\s\S]*?)<\/tool-call>/)
-        if (match && match[1]) {
-          const payload = JSON.parse(match[1])
+        let raw = event.detail
+        const match = raw.match(/<tool-call>([\s\S]*?)<\/tool-call>/) || [null, raw]
+        if (match[1]) {
+          const payload = JSON.parse(match[1].trim())
           await ActionBridge.execute(payload.action, payload.params)
         }
       } catch (err) {
@@ -679,21 +680,30 @@ Mantra: Fix UI, logic, and paths proactively. Materialize components dynamically
         window.__oc_toolCallInterceptor = true;
 
         var observer = new MutationObserver(function(mutations) {
-          var textNodes = document.querySelectorAll('p, div, span, code, pre');
+          var textNodes = document.querySelectorAll('p, div, span, code, pre, li');
           for (var i = 0; i < textNodes.length; i++) {
             var node = textNodes[i];
-            if (node.textContent && node.textContent.includes('<tool-call>') && !node.dataset.omniProcessed) {
+            if (node.textContent && (node.textContent.includes('<tool-call>') || (node.textContent.includes('"action":') && node.textContent.includes('"params":'))) && !node.dataset.omniProcessed) {
               node.dataset.omniProcessed = "true";
               try {
-                var match = node.textContent.match(/<tool-call>([\\s\\S]*?)<\/tool-call>/);
-                if (match && match[1]) {
-                  var data = JSON.parse(match[1]);
-                  if (window.mobileApp && typeof window.mobileApp.postMessage === 'function') {
-                    window.mobileApp.postMessage({ detail: { type: 'opencode:action', action: data.action, params: data.params } });
+                var content = node.textContent;
+                var match = content.match(/<tool-call>([\\s\\S]*?)<\/tool-call>/) || [null, content];
+                if (match[1]) {
+                  var jsonStr = match[1].trim();
+                  // Limpiar formato markdown si viene con ```json ... ```
+                  jsonStr = jsonStr.replace(/^```json\s*/i, '').replace(/^```\s*/, '').replace(/\s*```$/, '');
+                  var data = JSON.parse(jsonStr);
+                  if (data && data.action) {
+                    // Ocultar el bloque de texto crudo de la IA
+                    node.style.display = 'none';
+                    // Enviar acción al nativo
+                    if (window.mobileApp && typeof window.mobileApp.postMessage === 'function') {
+                      window.mobileApp.postMessage({ detail: { type: 'opencode:action', action: data.action, params: data.params } });
+                    }
                   }
                 }
               } catch(e) {
-                console.error("Tool-call parse error:", e);
+                console.error("Tool-call execution error:", e);
               }
             }
           }
