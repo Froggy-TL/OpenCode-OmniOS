@@ -598,14 +598,23 @@ async function openInAppBrowser(): Promise<void> {
       void handleWebviewNotificationMessage(event.detail)
     }
 
-    // NUEVO: Manejo de adjuntos nativos
-    if (event.detail?.type === 'opencode:request-attachment') {
-      // ... (código existente) ...
+    // INTERCEPTAR LLAMADAS DE TOOL-CALL DESDE EL CHAT WEBVIEW
+    if (event.detail?.type === 'opencode:action' || event.detail?.action) {
+      const action = event.detail.action || event.detail.type.replace('opencode:', '')
+      await ActionBridge.execute(action, event.detail.params || event.detail)
     }
 
-    // NUEVO: Acción nativa (ActionBridge)
-    if (event.detail?.type === 'opencode:action') {
-      await ActionBridge.execute(event.detail.action, event.detail.params)
+    // SI LA WEBVIEW ENVÍA UN MENSAJE DE TEXTO CON <tool-call>
+    if (typeof event.detail === 'string' && event.detail.includes('<tool-call>')) {
+      try {
+        const match = event.detail.match(/<tool-call>([\s\S]*?)<\/tool-call>/)
+        if (match && match[1]) {
+          const payload = JSON.parse(match.1)
+          await ActionBridge.execute(payload.action, payload.params)
+        }
+      } catch (err) {
+        console.error('Failed to parse tool-call from webview message:', err)
+      }
     }
   })
 
@@ -664,9 +673,36 @@ Mantra: Fix UI, logic, and paths proactively. Materialize components dynamically
       })();` 
     })
     
+    // INYECTAR INTERCEPTOR DE TOOL-CALLS EN EL DOM DE LA WEBVIEW
     await InAppBrowser.executeScript({
       code: `(function(){
-        var patterns=['Error: ServerSync','Error: Settings context','settings context must be used'];
+        if (window.__oc_toolCallInterceptor) return;
+        window.__oc_toolCallInterceptor = true;
+
+        // Observar mensajes de chat en el DOM para buscar <tool-call> y ejecutarlos automáticamente
+        var observer = new MutationObserver(function(mutations) {
+          var textNodes = document.querySelectorAll('p, div, span, code, pre');
+          for (var i = 0; i < textNodes.length; i++) {
+            var node = textNodes[i];
+            if (node.textContent && node.textContent.includes('<tool-call>') && !node.dataset.omniProcessed) {
+              node.dataset.omniProcessed = "true";
+              try {
+                var match = node.textContent.match(/<tool-call>([\\\\s\\\\S]*?)<\\\\/tool-call>/);
+                if (match && match[1]) {
+                  var data = JSON.parse(match[1]);
+                  if (window.mobileApp && typeof window.mobileApp.postMessage === 'function') {
+                    window.mobileApp.postMessage({ detail: { type: 'opencode:action', action: data.action, params: data.params } });
+                  }
+                }
+              } catch(e) {
+                console.error("Tool-call parse error:", e);
+              }
+            }
+          }
+        });
+        observer.observe(document.body, { childList: true, subtree: true });
+      })();`
+    })
         var hidden=new Set;
         function hideErrors(){
           var all=document.querySelectorAll('textarea');
