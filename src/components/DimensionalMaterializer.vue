@@ -105,26 +105,26 @@ const preparing = ref(false)
 
 const palettes = {
   normal: {
-    primary: '#FF95E7',
-    accent: '#1390FF',
-    secondary: '#9333ea',
-    glow: '#f472b6'
+    primary: 'var(--omni-primary, #FF95E7)',
+    accent: 'var(--omni-accent, #1390FF)',
+    secondary: 'var(--omni-secondary, #9333ea)',
+    glow: 'var(--omni-glow, #f472b6)'
   },
   thinking: {
-    primary: '#a855f7',
-    accent: '#3b82f6',
-    secondary: '#ec4899',
+    primary: 'var(--omni-thinking-1, #a855f7)',
+    accent: 'var(--omni-thinking-2, #3b82f6)',
+    secondary: 'var(--omni-thinking-3, #ec4899)',
     glow: '#c084fc'
   },
   success: {
-    primary: '#10b981',
-    accent: '#06b6d4',
+    primary: 'var(--omni-success-1, #10b981)',
+    accent: 'var(--omni-success-2, #06b6d4)',
     secondary: '#3b82f6',
     glow: '#34d399'
   },
   error: {
-    primary: '#ef4444',
-    accent: '#f97316',
+    primary: 'var(--omni-error-1, #ef4444)',
+    accent: 'var(--omni-error-2, #f97316)',
     secondary: '#dc2626',
     glow: '#f87171'
   }

@@ -19,9 +19,10 @@
       </svg>
       <div class="w-full max-w-sm flex flex-col items-center gap-6">
         <div class="text-center mb-15 mt-33">
-          <picture>
-            <img src="./OmniOS logo (texto con formato y degradado).png" alt="OpenCode Omni-OS" class="h-20 mx-auto mb-4 object-contain" />
-          </picture>
+          <div class="flex flex-col items-center gap-2 mb-6">
+            <img src="./Icono sin fondo.png" alt="OmniOS Icon" class="h-16 w-16 object-contain drop-shadow-[0_0_15px_rgba(255,149,231,0.5)]" />
+            <img src="./Logo OmniOS tamaño real.png" alt="OmniOS Logo" class="h-8 object-contain filter drop-shadow-[0_0_10px_rgba(19,144,255,0.6)]" />
+          </div>
           <p class="text-sm text-muted-foreground">{{ t('landing.tagline') }}</p>
         </div>
 
