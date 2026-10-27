@@ -36,7 +36,7 @@ import { useLayoutStore } from '@/stores/layoutStore'
 import { InAppBrowser, ToolBarType, BackgroundColor } from '@capgo/capacitor-inappbrowser'
 import { Capacitor } from '@capacitor/core'
 import { App } from '@capacitor/app'
-import { Camera, CameraResultType } from '@capacitor/camera'
+// import { Camera, CameraResultType } from '@capacitor/camera'
 const NativeAudio = { preload: async () => {} }
 import { useServerStore } from '@/stores/serverStore'
 import { ActionBridge } from '@/services/bridge/ActionBridge'

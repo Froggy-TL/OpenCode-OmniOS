@@ -16,7 +16,13 @@ export default defineConfig({
   },
   build: {
     rollupOptions: {
-      external: ['@capacitor-community/native-audio'],
+      external: [
+        '@capacitor-community/native-audio',
+        '@capacitor/camera',
+        '@capacitor/app',
+        '@capacitor/core',
+        '@capgo/capacitor-inappbrowser'
+      ],
     },
   },
   test: {
