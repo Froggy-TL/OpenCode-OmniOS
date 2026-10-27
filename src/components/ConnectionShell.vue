@@ -673,13 +673,11 @@ Mantra: Fix UI, logic, and paths proactively. Materialize components dynamically
       })();` 
     })
     
-    // INYECTAR INTERCEPTOR DE TOOL-CALLS EN EL DOM DE LA WEBVIEW
     await InAppBrowser.executeScript({
       code: `(function(){
         if (window.__oc_toolCallInterceptor) return;
         window.__oc_toolCallInterceptor = true;
 
-        // Observar mensajes de chat en el DOM para buscar <tool-call> y ejecutarlos automáticamente
         var observer = new MutationObserver(function(mutations) {
           var textNodes = document.querySelectorAll('p, div, span, code, pre');
           for (var i = 0; i < textNodes.length; i++) {
@@ -687,7 +685,7 @@ Mantra: Fix UI, logic, and paths proactively. Materialize components dynamically
             if (node.textContent && node.textContent.includes('<tool-call>') && !node.dataset.omniProcessed) {
               node.dataset.omniProcessed = "true";
               try {
-                var match = node.textContent.match(/<tool-call>([\\\\s\\\\S]*?)<\\\\/tool-call>/);
+                var match = node.textContent.match(/<tool-call>([\\s\\S]*?)<\/tool-call>/);
                 if (match && match[1]) {
                   var data = JSON.parse(match[1]);
                   if (window.mobileApp && typeof window.mobileApp.postMessage === 'function') {
@@ -701,8 +699,8 @@ Mantra: Fix UI, logic, and paths proactively. Materialize components dynamically
           }
         });
         observer.observe(document.body, { childList: true, subtree: true });
-      })();`
-    })
+
+        var patterns=['Error: ServerSync','Error: Settings context','settings context must be used'];
         var hidden=new Set;
         function hideErrors(){
           var all=document.querySelectorAll('textarea');
