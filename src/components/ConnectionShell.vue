@@ -609,7 +609,7 @@ async function openInAppBrowser(): Promise<void> {
       try {
         const match = event.detail.match(/<tool-call>([\s\S]*?)<\/tool-call>/)
         if (match && match[1]) {
-          const payload = JSON.parse(match.1)
+          const payload = JSON.parse(match[1])
           await ActionBridge.execute(payload.action, payload.params)
         }
       } catch (err) {
