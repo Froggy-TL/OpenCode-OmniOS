@@ -27,14 +27,23 @@
       <div class="w-full max-w-sm flex flex-col items-center gap-6">
         <div class="text-center mb-12 mt-12">
           <div class="flex flex-col items-center gap-3 mb-6">
-            <!-- Icono usando imagen directa con nitidez máxima -->
-            <img src="/icon-mask.png" alt="OmniOS Icon" class="h-16 w-16 object-contain filter drop-shadow-[0_0_15px_rgba(255,149,231,0.5)]" />
+            <!-- Icono con degradado translúcido por encima mediante overlay -->
+            <div class="relative w-16 h-16 flex items-center justify-center">
+              <img src="/icon-mask.png" alt="OmniOS Icon" class="h-16 w-16 object-contain filter drop-shadow-[0_0_15px_rgba(255,149,231,0.5)]" />
+              <div class="absolute inset-0 bg-gradient-to-tr from-[#FF95E7]/50 via-[#1390FF]/30 to-transparent mix-blend-color-dodge pointer-events-none rounded-xl"></div>
+            </div>
             
             <div class="flex flex-col items-center gap-1.5 mt-2">
-              <!-- OpenCode Text (Imagen directa limpia y nítida) -->
-              <img src="/opencode-mask.png" alt="OpenCode" class="h-5 object-contain filter drop-shadow-[0_0_8px_rgba(19,144,255,0.4)]" />
-              <!-- OmniOS Text (Imagen directa limpia y nítida) -->
-              <img src="/omnios-mask.png" alt="OmniOS" class="h-6 object-contain filter drop-shadow-[0_0_12px_rgba(255,149,231,0.5)]" />
+              <!-- OpenCode con degradado sutil por encima -->
+              <div class="relative inline-block">
+                <img src="/opencode-mask.png" alt="OpenCode" class="h-5 object-contain filter brightness-125" />
+                <div class="absolute inset-0 bg-gradient-to-r from-[#1390FF] to-[#FF95E7] mix-blend-color-dodge opacity-80 pointer-events-none"></div>
+              </div>
+              <!-- OmniOS con degradado sutil por encima -->
+              <div class="relative inline-block">
+                <img src="/omnios-mask.png" alt="OmniOS" class="h-6 object-contain filter brightness-125" />
+                <div class="absolute inset-0 bg-gradient-to-r from-[#FF95E7] via-[#1390FF] to-[#9333ea] mix-blend-color-dodge opacity-80 pointer-events-none"></div>
+              </div>
             </div>
           </div>
           <p class="text-xs text-slate-400 tracking-wide font-sans mt-1">{{ t('landing.tagline') }}</p>
